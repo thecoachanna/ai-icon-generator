@@ -4,6 +4,8 @@ import Head from "next/head";
 import { Input } from "~/components/Input";
 import { FormGroup } from "~/components/FormGroup";
 import { api } from "~/utils/api";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { Button } from "~/components/Button";
 
 const GeneratePage: NextPage = () => {
   const [form, setForm] = useState({ 
@@ -30,6 +32,9 @@ const GeneratePage: NextPage = () => {
       setForm((prev) => ({ ...prev, [key]: e.target.value }))
     }
   }
+
+  const session = useSession();
+  const isLoggedIn = !!session.data;
   
   return (
     <>
@@ -39,6 +44,20 @@ const GeneratePage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center">
+
+    {/* Login Button */}
+        {!isLoggedIn && (
+          <Button onClick={() => {
+            signIn().catch(console.error);
+          }}>Login</Button>
+        )}
+    {/* Logout Button */}
+         {isLoggedIn && (
+          <Button onClick={() => {
+            signOut().catch(console.error);
+          }}>Logout</Button>
+        )}
+          
         <form action="" className="flex flex-col gap-4"
         onSubmit={handleFormSubmit}>
           <FormGroup>
@@ -47,9 +66,9 @@ const GeneratePage: NextPage = () => {
               value={form.prompt}
               onChange={updateForm("prompt")}/>
           </FormGroup>
-          <button className="rounded bg-blue-400 px-4 py-2 hover:bg-blue-500">
+          <Button className="rounded bg-blue-400 px-4 py-2 hover:bg-blue-500">
             Submit
-          </button>
+          </Button>
         </form>
       </main>
     </>
